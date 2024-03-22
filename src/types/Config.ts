@@ -1,18 +1,17 @@
 export type Backup = {
     enabled : boolean | undefined,
     use_clyde : boolean,
-    backup_dm_id : string,
+    backup_id : string,
 }
 
 export type Command = {
     command_type : "legacy" | "slash",
-    legacy_command_prefix : string,
+    legacy_command_prefix : string | undefined,
     command_name : string,
 }
 
 export type Packwatch = {
     enabled : boolean | undefined,
-    packwatch_id : string | undefined,
     guild_id : string | undefined,
     channel_id : string | undefined,
     command : Command | undefined
