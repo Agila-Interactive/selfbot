@@ -2,6 +2,11 @@ interface QuestionBase {
     question : string;
 }
 
+interface Option extends QuestionBase {
+    type: "option";
+    choices: string[];
+}
+
 interface Number extends QuestionBase {
     type : "number";
     min : number;
@@ -17,7 +22,7 @@ interface String extends QuestionBase {
     type : "string";
 }
 
-type Question = Number | Boolean | String;
+type Question = Number | Boolean | String | Option;
 
 
 async function getInput() : Promise<string> {
@@ -63,39 +68,35 @@ async function getNumber(question : Number) : Promise<number> {
     return input;
 }
 
+async function getOption(question : Option) : Promise<number> {
+    let output = `${question.question}\n`;
+    for (let i = 0; i < question.choices.length; i++) {
+        const tmp = `${i+1}) ${question.choices[i]}`;
+        output = `${output}\n${tmp}`;
+    }
+    output = `${output}\nEnter your choice (1-${question.choices.length}) `;
+    process.stdout.write(output);
+    let input : number = Number(await getInput());
+    if (Number.isNaN(input)) {
+        process.stdout.write("Input must be a number!\n");
+        return getOption(question);
+    }
+    if (input < 1 || input > question.choices.length - 1) {
+        process.stdout.write("Input out of range!\n");
+        return getOption(question);
+    }
+    return input;
+}
+
 export async function prompt(question : Question) : Promise<string | boolean | number> {
     switch(question.type) {
         case "boolean":
-            return await getBoolean(question);
+            return await getBoolean(question) as boolean;
         case "string":
-            return await getString(question);
+            return await getString(question) as string;
         case "number":
-            return await getNumber(question);
+            return await getNumber(question) as number;
+        case "option":
+            return await getOption(question) as number;
     }
 }
-
-console.log(await prompt({
-    type: "number",
-    question: "Enter a number",
-    min: 0,
-    max: 5,
-}));
-
-console.log(await prompt({
-    type: "boolean",
-    question: "Are you sure",
-    default: true,
-}));
-
-
-console.log(await prompt({
-    type: "boolean",
-    question: "Are you sure",
-    default: false,
-}));
-
-console.log(await prompt({
-    type: "string",
-    question: "Enter a string",
-
-}));
