@@ -81,7 +81,7 @@ async function getOption(question : Option) : Promise<number> {
         process.stdout.write("Input must be a number!\n");
         return getOption(question);
     }
-    if (input < 1 || input > question.choices.length - 1) {
+    if (input < 1 || input > question.choices.length) {
         process.stdout.write("Input out of range!\n");
         return getOption(question);
     }
