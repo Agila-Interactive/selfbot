@@ -7,5 +7,5 @@ export const config : Config = {
 }
 
 export async function execute(client : Client) : Promise<void> {
-
+    console.log(`Logged in as ${client.user!.username} <@${client.user!.id}>`);
 }

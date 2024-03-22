@@ -1,59 +1,74 @@
 import { Client } from "discord.js-selfbot-v13";
 
 import { loadEventListeners } from "./modules/loadEventListener";
+import { initConfig, editConfig } from "./modules/setup";
 import { prompt } from "./modules/prompter"
 import type { Config } from "./types/Config";
-import { initConfig } from "./modules/setup";
-import { join} from "node:path";
+import { join } from "node:path";
 
 
-let client : Client;
+let client: Client;
 
-async function botLogin() : Promise<Client> {
-    const token = await prompt({ question: "Enter your discord token: ", type: "string" });
+async function botLogin(): Promise<void> {
+    let token = await prompt({ question: "Enter your discord token: ", type: "string" }) as string;
+    token = token.replaceAll('"', "");
     client = new Client();
     await loadEventListeners(client);
-
+    await client.login(token);
 }
 
-async function showMenu() : Promise<void> {
+async function startSelfbot(): Promise<void> {
+    await botLogin();
+}
+
+
+async function showMenu(): Promise<void> {
     const logo = await Bun.file(join(import.meta.dir, "templates", "logo.txt")).text();
     const version = await Bun.file(join(import.meta.dir, "..", "version")).text();
     const desc = await Bun.file(join(import.meta.dir, "templates", "description.txt")).text();
     console.log(`${logo}\nversion${version}\n${desc}`);
 }
 
-async function showOptions() : Promise<number | void> {
+async function showOptions(): Promise<number | void> {
     const option = await prompt({
         question: "What would you like to do",
         type: "option",
         choices: [
-            "Login",
+            "Start selfbot",
             "Edit settings",
             "Exit",
         ],
     });
-    if (option === 3) {
-        console.log("Goodbye!")
-        process.exit(0);
-    }
-}
-
-async function start() {
-    await showMenu();
-    const option = await showOptions();
+    return option as number;
 }
 
 async function exitGrace() {
     if (client !== undefined) {
+        console.log(`Logging out from ${client.user!.username}`);
         client.logout();
+    }
+    console.log("Goodbye!");
+    process.exit();
+}
+
+
+async function start(): Promise<void> {
+    await showMenu();
+    const option = await showOptions();
+    switch (option) {
+        case 1:
+            return startSelfbot();
+        case 2:
+            return editConfig();
+        case 3:
+            return exitGrace();
     }
 }
 
+
 process.on("SIGINT", async () => {
     await exitGrace();
-    process.exit();
-})
+});
 
 await initConfig();
 await start();

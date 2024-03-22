@@ -1,0 +1,3 @@
+The only selfbot you need to effecifiently grab all the user Ids from a discord server!
+
+Disclaimer: Due to Discord API's limitation, this selfbot might not be able to get all members of a large server.
