@@ -1,6 +1,7 @@
 import { getSavedConfig, writeToConfig } from "./configHandler";
 import type { Backup, Command, Config, Packwatch } from "../types/Config";
 import { resolve, join } from "node:path";
+import { existsSync, mkdirSync } from "node:fs";
 import { validatePath } from "./utils";
 import { prompt } from "./prompter";
 
@@ -13,7 +14,11 @@ async function getOutDir() : Promise<string> {
     });
 
     if (useDefault) {
-        return resolve(join(import.meta.dir, "../..", "output"))
+        const outdir = resolve(join(import.meta.dir, "../..", "output"));
+        if (!existsSync(outdir)) {
+            mkdirSync(outdir);
+        }
+        return outdir;
     }
 
     // @ts-ignore
@@ -130,4 +135,7 @@ export async function initConfig() : Promise<Config>{
         return config;
     }
     return savedConfig;
+}
+
+export async function editConfig() : Promise<void> {
 }
