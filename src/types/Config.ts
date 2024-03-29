@@ -6,6 +6,7 @@ export type Backup = {
 
 export type Command = {
     command_type : "legacy" | "slash",
+    packwatch_id : string | undefined,
     legacy_command_prefix : string | undefined,
     command_name : string,
 }
