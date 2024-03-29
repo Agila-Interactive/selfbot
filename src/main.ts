@@ -2,10 +2,9 @@ import { Client } from "discord.js-selfbot-v13";
 
 import { loadEventListeners } from "./modules/loadEventListener";
 import { initConfig, editConfig } from "./modules/setup";
-import { prompt } from "./modules/prompter"
-import type { Config } from "./types/Config";
+import { exitGrace } from "./modules/utils";
+import { prompt } from "./modules/prompter";
 import { join } from "node:path";
-
 
 let client: Client;
 
@@ -42,16 +41,6 @@ async function showOptions(): Promise<number | void> {
     return option as number;
 }
 
-async function exitGrace() {
-    if (client !== undefined) {
-        console.log(`Logging out from ${client.user!.username}`);
-        client.logout();
-    }
-    console.log("Goodbye!");
-    process.exit();
-}
-
-
 async function start(): Promise<void> {
     await showMenu();
     const option = await showOptions();
@@ -61,13 +50,13 @@ async function start(): Promise<void> {
         case 2:
             return editConfig();
         case 3:
-            return exitGrace();
+            return exitGrace(client);
     }
 }
 
 
 process.on("SIGINT", async () => {
-    await exitGrace();
+    await exitGrace(client);
 });
 
 await initConfig();
