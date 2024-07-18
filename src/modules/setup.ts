@@ -65,7 +65,8 @@ async function getPackwatchCommand() : Promise<Command | undefined> {
         ]
     });
     let command_type : "legacy" | "slash";
-    let legacy_command_prefix : string | undefined
+    let legacy_command_prefix : string | undefined;
+    let packwatch_id : string | undefined;
     if (cmdType === 1) {
         command_type = "legacy";
         // @ts-ignore
@@ -76,13 +77,18 @@ async function getPackwatchCommand() : Promise<Command | undefined> {
 
     } else {
         command_type = "slash";
+        // @ts-ignore
+        packwatch_id  = await prompt({
+            question: "Please enter packwatch id",
+            type: "string",
+        });
     }
     let command_name = await prompt({
         question: "What is the command name",
         type: "string",
     });
 
-    return { command_type, legacy_command_prefix, command_name } as Command;
+    return { command_type, legacy_command_prefix, command_name, packwatch_id } as Command;
 }
 
 async function getPackwatch() : Promise<Packwatch | undefined> {
